@@ -1,3 +1,6 @@
+import Garage from '../support/pageObjects/Garage';
+import Expenses from '../support/pageObjects/Expenses';
+
 describe('Registration Form Validation', () => {
     beforeEach('Open Website', () => {
         cy.visit('https://guest:welcome2qauto@qauto.forstudy.space')
@@ -110,7 +113,8 @@ describe('Registration Form Validation', () => {
 
 describe('New User Registration', () => {
     beforeEach('Open Website', () => {
-        cy.visit('https://guest:welcome2qauto@qauto.forstudy.space')
+        const baseUrl = Cypress.config('baseUrl');
+        cy.visit(baseUrl)
         cy.get('.btn-outline-white').click();
         cy.get('button.btn:nth-child(1)').click();
     })
@@ -133,14 +137,21 @@ describe('New User Registration', () => {
 
 describe('Successful Log In', () => {
 
-    it('Should log in successfully', () => {
+    it('Should log in successfully, add a new car and add a fuel expense', () => {
+        const registeredEmail = Cypress.env('registeredEmail');
+        expect(registeredEmail).to.not.be.undefined;
 
-            const registeredEmail = Cypress.env('registeredEmail');
-            expect(registeredEmail).to.not.be.undefined;
-
-            cy.login(registeredEmail, 'Test12345');
-            cy.wait(15000);
-    });
+        cy.login(registeredEmail, 'Test12345');
+        cy.wait(15000);
+    
+        Garage.open();
+        Garage.addCar('Audi', 'TT', '5000');
+        Garage.verifyCar('TT');
+  
+        Expenses.open();
+        Expenses.addExpense('6000', '50', '1500');
+        Expenses.verifyExpense('6000');
+  });
     
 })
 
