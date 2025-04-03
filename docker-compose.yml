@@ -1,0 +1,9 @@
+version: '3.9'
+services:
+  cypress:
+    image: cypress/included:latest
+    container_name: cypress_tests
+    working_dir: /e2e
+    volumes: /e2e
+    environment: CYPRESS_baseUrl=https://guest:welcome2qauto@qauto.forstudy.space
+    command: ["npx", "cypress", "run", "--browser", "chrome"]
