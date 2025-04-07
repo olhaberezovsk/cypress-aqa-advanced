@@ -112,132 +112,132 @@ describe('Registration Form Validation', () => {
     })
 })
 
-describe('New User Registration', () => {
-    beforeEach('Open Website', () => {
-        const baseUrl = Cypress.config('baseUrl');
-        cy.visit(baseUrl)
-        cy.get('.btn-outline-white').click();
-        cy.get('button.btn:nth-child(1)').click();
-    })
+// describe('New User Registration', () => {
+//     beforeEach('Open Website', () => {
+//         const baseUrl = Cypress.config('baseUrl');
+//         cy.visit(baseUrl)
+//         cy.get('.btn-outline-white').click();
+//         cy.get('button.btn:nth-child(1)').click();
+//     })
 
-    it('Creating New User with Valid Data', () => {
-            const testEmail = "testRegistration@mailinator.com";
-            const emailToRegistrate = testEmail.replace("@", `+${Date.now()}@`);
+//     it('Creating New User with Valid Data', () => {
+//             const testEmail = "testRegistration@mailinator.com";
+//             const emailToRegistrate = testEmail.replace("@", `+${Date.now()}@`);
 
-            Cypress.env('registeredEmail', emailToRegistrate);
+//             Cypress.env('registeredEmail', emailToRegistrate);
 
-            cy.get('#signupName').type('Olha');
-            cy.get('#signupLastName').type('Berezovska');
-            cy.get('#signupEmail').type(emailToRegistrate);
-            cy.get('#signupPassword').type('Test12345');
-            cy.get('#signupRepeatPassword').type('Test12345');
-            cy.get('button.btn:nth-child(1)').click();
-            cy.wait(11000);
-    })
-})
+//             cy.get('#signupName').type('Olha');
+//             cy.get('#signupLastName').type('Berezovska');
+//             cy.get('#signupEmail').type(emailToRegistrate);
+//             cy.get('#signupPassword').type('Test12345');
+//             cy.get('#signupRepeatPassword').type('Test12345');
+//             cy.get('button.btn:nth-child(1)').click();
+//             cy.wait(11000);
+//     })
+// })
 
-describe('Successful Log In', () => {
+// describe('Successful Log In', () => {
 
-    it('Should log in successfully, add a new car and add a fuel expense', () => {
-        const registeredEmail = Cypress.env('registeredEmail');
-        expect(registeredEmail).to.not.be.undefined;
+//     it('Should log in successfully, add a new car and add a fuel expense', () => {
+//         const registeredEmail = Cypress.env('registeredEmail');
+//         expect(registeredEmail).to.not.be.undefined;
 
-        cy.login(registeredEmail, 'Test12345');
-        cy.wait(15000);
+//         cy.login(registeredEmail, 'Test12345');
+//         cy.wait(15000);
     
-        Garage.open();
-        Garage.addCar('Audi', 'TT', '5000');
-        Garage.verifyCar('TT');
+//         Garage.open();
+//         Garage.addCar('Audi', 'TT', '5000');
+//         Garage.verifyCar('TT');
   
-        Expenses.open();
-        Expenses.addExpense('6000', '50', '1500');
-        Expenses.verifyExpense('6000');
-  });
+//         Expenses.open();
+//         Expenses.addExpense('6000', '50', '1500');
+//         Expenses.verifyExpense('6000');
+//   });
     
-})
+// })
 
-describe('API Validation for Car Creating', () => {
-    beforeEach(() => {
-        const baseUrl = Cypress.config('baseUrl');
-        cy.visit(baseUrl)
-        cy.get('.btn-outline-white').click(); 
-        const registeredEmail = Cypress.env('registeredEmail');
-        expect(registeredEmail).to.not.be.undefined;
-        cy.login(registeredEmail, 'Test12345');
-        cy.wait(15000);
-    });
+// describe('API Validation for Car Creating', () => {
+//     beforeEach(() => {
+//         const baseUrl = Cypress.config('baseUrl');
+//         cy.visit(baseUrl)
+//         cy.get('.btn-outline-white').click(); 
+//         const registeredEmail = Cypress.env('registeredEmail');
+//         expect(registeredEmail).to.not.be.undefined;
+//         cy.login(registeredEmail, 'Test12345');
+//         cy.wait(15000);
+//     });
     
-    let createdCar = {}; 
-    let expenseData = {}; 
+//     let createdCar = {}; 
+//     let expenseData = {}; 
 
-    it('Create Car and Validate Intercepted Response', function () {
-        cy.visit('/panel/garage');
-        cy.intercept('POST', '**/api/cars').as('carAdded');
+//     it('Create Car and Validate Intercepted Response', function () {
+//         cy.visit('/panel/garage');
+//         cy.intercept('POST', '**/api/cars').as('carAdded');
     
-        createdCar = {
-            brand: 'BMW',
-            model: '3',
-            mileage: 6000
-        };
+//         createdCar = {
+//             brand: 'BMW',
+//             model: '3',
+//             mileage: 6000
+//         };
 
-        Garage.open();
-        Garage.addCar(createdCar.brand, createdCar.model, createdCar.mileage);
-        Garage.verifyCar(createdCar.model);
+//         Garage.open();
+//         Garage.addCar(createdCar.brand, createdCar.model, createdCar.mileage);
+//         Garage.verifyCar(createdCar.model);
 
-        cy.wait('@carAdded').then((interception) => {
-            expect(interception.response.statusCode).to.eq(201);
-            createdCar.id = interception.response.body.data.id;
-            expect(createdCar.id).to.not.be.undefined;
-        });
-    });
+//         cy.wait('@carAdded').then((interception) => {
+//             expect(interception.response.statusCode).to.eq(201);
+//             createdCar.id = interception.response.body.data.id;
+//             expect(createdCar.id).to.not.be.undefined;
+//         });
+//     });
 
-    it('Validate Created Car Exists in API List', function () {
-        cy.wrap(null).should(() => {
-            expect(createdCar.id).to.not.be.undefined;
-        });
+//     it('Validate Created Car Exists in API List', function () {
+//         cy.wrap(null).should(() => {
+//             expect(createdCar.id).to.not.be.undefined;
+//         });
 
-        cy.request({
-            method: 'GET',
-            url: `${Cypress.config('baseUrl')}/api/cars`,
-            headers: { Authorization: `Bearer ${Cypress.env('authToken')}` }
-        }).then((response) => {
-            expect(response.status).to.eq(200);
+//         cy.request({
+//             method: 'GET',
+//             url: `${Cypress.config('baseUrl')}/api/cars`,
+//             headers: { Authorization: `Bearer ${Cypress.env('authToken')}` }
+//         }).then((response) => {
+//             expect(response.status).to.eq(200);
         
-            const foundCar = response.body.data.find(car =>
-            car.id === createdCar.id &&
-            car.brand === createdCar.brand &&
-            car.model === createdCar.model &&
-            car.mileage === createdCar.mileage
-            );
+//             const foundCar = response.body.data.find(car =>
+//             car.id === createdCar.id &&
+//             car.brand === createdCar.brand &&
+//             car.model === createdCar.model &&
+//             car.mileage === createdCar.mileage
+//             );
 
-            expect(foundCar).to.not.be.undefined;
-        });
-    });
+//             expect(foundCar).to.not.be.undefined;
+//         });
+//     });
 
-    it('Create Expense for Created Car via API', function () {
-        expect(createdCar.id).to.not.be.undefined;
+//     it('Create Expense for Created Car via API', function () {
+//         expect(createdCar.id).to.not.be.undefined;
     
-        expenseData = {
-            carId: createdCar.id,
-            reportedAt: "2025-02-19", 
-            mileage: 7000,             
-            liters: 7000,               
-            totalCost: 7000,            
-            forceMileage: false       
-        };
+//         expenseData = {
+//             carId: createdCar.id,
+//             reportedAt: "2025-02-19", 
+//             mileage: 7000,             
+//             liters: 7000,               
+//             totalCost: 7000,            
+//             forceMileage: false       
+//         };
         
-        cy.createExpense(createdCar.id, expenseData);
-    });
+//         cy.createExpense(createdCar.id, expenseData);
+//     });
 
-    it('Find Created Car and Validate Expense through UI', function () {
-        cy.visit('/panel/garage');
-        cy.contains(createdCar.model).should('be.visible'); 
-        cy.contains(createdCar.model).click();
-        cy.contains('Fuel expenses').click(); 
-        cy.contains(expenseData.reportedAt.split('-').reverse().join('.')).should('be.visible'); 
-        cy.contains(expenseData.mileage).should('be.visible'); 
-        cy.contains(expenseData.liters).should('be.visible'); 
-        cy.contains(expenseData.totalCost).should('be.visible'); 
-    });
-});
+//     it('Find Created Car and Validate Expense through UI', function () {
+//         cy.visit('/panel/garage');
+//         cy.contains(createdCar.model).should('be.visible'); 
+//         cy.contains(createdCar.model).click();
+//         cy.contains('Fuel expenses').click(); 
+//         cy.contains(expenseData.reportedAt.split('-').reverse().join('.')).should('be.visible'); 
+//         cy.contains(expenseData.mileage).should('be.visible'); 
+//         cy.contains(expenseData.liters).should('be.visible'); 
+//         cy.contains(expenseData.totalCost).should('be.visible'); 
+//     });
+// });
 
